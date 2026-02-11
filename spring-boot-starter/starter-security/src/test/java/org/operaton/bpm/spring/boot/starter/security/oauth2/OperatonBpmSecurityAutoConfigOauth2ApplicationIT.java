@@ -103,7 +103,7 @@ class OperatonBpmSecurityAutoConfigOauth2ApplicationIT extends AbstractSpringSec
       // then oauth2 redirection occurs
       .andExpect(MockMvcResultMatchers.status().isFound())
       .andExpect(MockMvcResultMatchers.header().exists(LOCATION))
-      .andExpect(MockMvcResultMatchers.header().string(LOCATION, "/oauth2/authorization/" + PROVIDER));
+      .andExpect(MockMvcResultMatchers.header().string(LOCATION, baseUrl + "/oauth2/authorization/" + PROVIDER));
   }
 
   @Test
@@ -135,7 +135,7 @@ class OperatonBpmSecurityAutoConfigOauth2ApplicationIT extends AbstractSpringSec
       // then authorization fails and redirection occurs
       .andExpect(MockMvcResultMatchers.status().isFound())
       .andExpect(MockMvcResultMatchers.header().exists(LOCATION))
-      .andExpect(MockMvcResultMatchers.header().string(LOCATION, "/oauth2/authorization/" + PROVIDER));
+      .andExpect(MockMvcResultMatchers.header().string(LOCATION, baseUrl + "/oauth2/authorization/" + PROVIDER));
 
     String expectedWarn = "Authorize failed for '" + UNAUTHORIZED_USER + "'";
     assertThat(logger.getFilteredLog(expectedWarn)).hasSize(1);

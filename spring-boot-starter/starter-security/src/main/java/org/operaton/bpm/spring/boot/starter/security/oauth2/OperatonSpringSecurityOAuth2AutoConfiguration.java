@@ -16,6 +16,7 @@
  */
 package org.operaton.bpm.spring.boot.starter.security.oauth2;
 
+import java.util.Iterator;
 import java.util.Map;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.DispatcherType;
@@ -38,6 +39,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,6 +55,7 @@ import org.operaton.bpm.spring.boot.starter.security.oauth2.impl.OAuth2GrantedAu
 import org.operaton.bpm.spring.boot.starter.security.oauth2.impl.OAuth2IdentityProviderPlugin;
 import org.operaton.bpm.spring.boot.starter.security.oauth2.impl.SsoLogoutSuccessHandler;
 import org.operaton.bpm.webapp.impl.security.auth.ContainerBasedAuthenticationFilter;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @AutoConfigureOrder(OperatonSpringSecurityOAuth2AutoConfiguration.OPERATON_OAUTH2_ORDER)
 @AutoConfigureAfter({OperatonBpmAutoConfiguration.class, SpringProcessEngineServicesConfiguration.class})
@@ -117,15 +120,35 @@ public class OperatonSpringSecurityOAuth2AutoConfiguration {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http,
                                          AuthorizeTokenFilter authorizeTokenFilter,
+                                         ClientRegistrationRepository clientRegistrationRepository,
                                          @Nullable SsoLogoutSuccessHandler ssoLogoutSuccessHandler) {
 
     logger.info("Enabling Operaton Spring Security oauth2 integration");
+
+    String registrationId = null;
+    if (clientRegistrationRepository instanceof Iterable) {
+      Iterator<ClientRegistration> iterator = ((Iterable<ClientRegistration>) clientRegistrationRepository).iterator();
+      if (iterator.hasNext()) {
+        registrationId = iterator.next().getRegistrationId();
+      }
+    }
+
+    if (registrationId == null) {
+      throw new IllegalStateException("No OAuth2 ClientRegistration found");
+    }
+
+    String loginUrl = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + "/" + registrationId;
+    LoginUrlAuthenticationEntryPoint entryPoint = new LoginUrlAuthenticationEntryPoint(loginUrl);
+    entryPoint.setFavorRelativeUris(false);
 
     // @formatter:off
     http.authorizeHttpRequests(c -> c
             .requestMatchers(webappPath + "/app/**").authenticated()
             .requestMatchers(webappPath + "/api/**").authenticated()
             .anyRequest().permitAll()
+        )
+        .exceptionHandling(c -> c
+            .authenticationEntryPoint(entryPoint)
         )
         .addFilterAfter(authorizeTokenFilter, OAuth2AuthorizationRequestRedirectFilter.class)
         .anonymous(AbstractHttpConfigurer::disable)
