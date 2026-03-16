@@ -4,8 +4,9 @@ set -euo pipefail
 BASE_URL="https://googlechromelabs.github.io/chrome-for-testing"
 
 echo "➡️  Detecting current Stable-Version..."
-VERSION=$(curl -s "$BASE_URL/last-known-good-versions.json" | jq -r '.channels.Stable.version')
+#VERSION=$(curl -s "$BASE_URL/last-known-good-versions.json" | jq -r '.channels.Stable.version')
 #VERSION="140.0.7339.207"
+VERSION="141.0.7390.54"
 MILESTONE=$(echo "$VERSION" | cut -d. -f1)
 
 echo "📦 Stable Chrome Version: $VERSION (Milestone $MILESTONE)"
