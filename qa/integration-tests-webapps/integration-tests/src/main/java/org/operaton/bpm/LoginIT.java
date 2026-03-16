@@ -123,15 +123,11 @@ public class LoginIT extends AbstractWebappUiIntegrationTest {
   @Test
   void shouldLoginToWelcome() {
     assertThatCode(() -> {
-      // Intentionally throw an exception to force a build failure
-      throw new RuntimeException("INTENTIONAL FAILURE: Verifying LoginIT execution");
-
-    /* try {
-      loginToWelcome();
-    } catch (WebDriverException e) {
-      loginToWelcome();
-    }
-    */
+      try {
+        loginToWelcome();
+      } catch (WebDriverException e) {
+        loginToWelcome();
+      }
     }).doesNotThrowAnyException();
   }
 
