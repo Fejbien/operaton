@@ -318,6 +318,8 @@ class BoundaryErrorEventTest {
     assertThatThrownBy(() -> taskService.complete(taskId))
             .isInstanceOf(ProcessEngineException.class)
             .hasMessageContaining("ENGINE-02042 Execution with id 'theEnd' throws an error event with errorCode 'myError' and errorMessage 'null', but no error handler was defined.");
+
+    processEngineConfiguration.setEnableExceptionsAfterUnhandledBpmnError(false);
   }
 
 
@@ -341,6 +343,8 @@ class BoundaryErrorEventTest {
     assertThatThrownBy(() -> taskService.complete(taskId))
             .isInstanceOf(ProcessEngineException.class)
             .hasMessageContaining("ENGINE-02042 Execution with id 'theEnd' throws an error event with errorCode 'myError' and errorMessage 'null', but no error handler was defined.");
+
+    processEngineConfiguration.setEnableExceptionsAfterUnhandledBpmnError(false);
   }
 
   @Deployment(resources = {
