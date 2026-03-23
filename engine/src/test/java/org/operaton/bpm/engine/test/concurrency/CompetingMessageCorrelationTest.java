@@ -315,7 +315,7 @@ class CompetingMessageCorrelationTest extends ConcurrencyTestCase {
    * @throws InterruptedException
    */
   @Deployment(resources = "org/operaton/bpm/engine/test/concurrency/CompetingMessageCorrelationTest.catchMessageProcess.bpmn20.xml")
-  @Ignore("CAM-3636")
+//  @Ignore("CAM-3636")
   @Test
   void testConcurrentMixedCorrelationCase2() throws Exception {
     InvocationLogListener.reset();
