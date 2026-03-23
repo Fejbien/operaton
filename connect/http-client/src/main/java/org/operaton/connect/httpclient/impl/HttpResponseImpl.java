@@ -34,9 +34,17 @@ public class HttpResponseImpl extends AbstractCloseableConnectorResponse impleme
   private static final HttpConnectorLogger LOG = HttpLogger.HTTP_LOGGER;
 
   protected ClassicHttpResponse httpResponse;
+  protected String encoding = java.nio.charset.StandardCharsets.UTF_8.name();
 
   public HttpResponseImpl(ClassicHttpResponse httpResponse) {
     this.httpResponse = httpResponse;
+  }
+
+  public HttpResponseImpl(ClassicHttpResponse httpResponse, String encoding) {
+    this.httpResponse = httpResponse;
+    if (encoding != null) {
+      this.encoding = encoding;
+    }
   }
 
   @Override
@@ -71,7 +79,7 @@ public class HttpResponseImpl extends AbstractCloseableConnectorResponse impleme
 
     if (httpResponse.getEntity() != null) {
       try {
-        String response = new String(httpResponse.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
+        String response = new String(httpResponse.getEntity().getContent().readAllBytes(), java.nio.charset.Charset.forName(encoding));
         responseParameters.put(PARAM_NAME_RESPONSE, response);
       } catch (IOException e) {
         throw LOG.unableToReadResponse(e);

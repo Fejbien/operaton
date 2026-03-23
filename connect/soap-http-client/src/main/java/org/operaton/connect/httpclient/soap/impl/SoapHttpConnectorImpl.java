@@ -43,10 +43,9 @@ public class SoapHttpConnectorImpl extends AbstractHttpConnector<SoapHttpRequest
   }
 
   @Override
-  protected SoapHttpResponse createResponse(ClassicHttpResponse response) {
-    return new SoapHttpResponseImpl(response);
+  protected SoapHttpResponse createResponse(ClassicHttpResponse response, String encoding) {
+    return new SoapHttpResponseImpl(response, encoding);
   }
-
   @Override
   public SoapHttpResponse execute(SoapHttpRequest request) {
     // always use the POST method

@@ -172,4 +172,18 @@ public class AbstractHttpRequest<Q extends HttpBaseRequest<?, ?>, R extends Http
 
     return (Q) this;
   }
+
+  public Q encoding(String encoding) {
+    setRequestParameter(HttpBaseRequest.PARAM_NAME_REQUEST_ENCODING, encoding);
+    return (Q) this;
+  }
+
+  public String getEncoding() {
+    String encoding = getRequestParameter(HttpBaseRequest.PARAM_NAME_REQUEST_ENCODING);
+    if (encoding == null) {
+      // Default to UTF-8 to preserve backward compatibility
+      return java.nio.charset.StandardCharsets.UTF_8.name();
+    }
+    return encoding;
+  }
 }

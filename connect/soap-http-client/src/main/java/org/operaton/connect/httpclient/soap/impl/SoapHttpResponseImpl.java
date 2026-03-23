@@ -23,7 +23,7 @@ import org.operaton.connect.httpclient.soap.SoapHttpResponse;
 
 public class SoapHttpResponseImpl extends HttpResponseImpl implements SoapHttpResponse {
 
-  public SoapHttpResponseImpl(ClassicHttpResponse httpResponse) {
+  public SoapHttpResponseImpl(ClassicHttpResponse httpResponse, String encoding) {
     super(httpResponse);
   }
 

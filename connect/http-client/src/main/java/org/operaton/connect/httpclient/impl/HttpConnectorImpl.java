@@ -38,8 +38,8 @@ public class HttpConnectorImpl extends AbstractHttpConnector<HttpRequest, HttpRe
   }
 
   @Override
-  protected HttpResponse createResponse(ClassicHttpResponse response) {
-    return new HttpResponseImpl(response);
+  protected HttpResponse createResponse(ClassicHttpResponse response, String encoding) {
+    return new HttpResponseImpl(response, encoding);
   }
 
 }

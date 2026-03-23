@@ -87,7 +87,7 @@ public abstract class AbstractHttpConnector<Q extends HttpBaseRequest<Q, R>, R e
     BasicClassicHttpRequest httpRequest = createHttpRequest(request);
     HttpRequestInvocation invocation = new HttpRequestInvocation(httpRequest, request, requestInterceptors, httpClient);
     try {
-      invocationResult = createResponse((ClassicHttpResponse) invocation.proceed());
+      invocationResult = createResponse((ClassicHttpResponse) invocation.proceed(), request.getEncoding());
     } catch (Exception e) {
       throw LOG.unableToExecuteRequest(e);
     }
@@ -107,7 +107,7 @@ public abstract class AbstractHttpConnector<Q extends HttpBaseRequest<Q, R>, R e
     }
   }
 
-  protected abstract R createResponse(ClassicHttpResponse response);
+  protected abstract R createResponse(ClassicHttpResponse response, String encoding);
 
   /**
    * creates a apache Http representation of the request.
@@ -171,7 +171,8 @@ public abstract class AbstractHttpConnector<Q extends HttpBaseRequest<Q, R>, R e
   protected <T extends BasicClassicHttpRequest> void applyPayload(T httpRequest, Q request) {
     if (httpMethodSupportsPayload(httpRequest)) {
       if (request.getPayload() != null) {
-        byte[] bytes = request.getPayload().getBytes(charset);
+        String requestEncoding = request.getEncoding();
+        byte[] bytes = request.getPayload().getBytes(Charset.forName(requestEncoding));
         ByteArrayInputStream payload = new ByteArrayInputStream(bytes);
         InputStreamEntity entity = new InputStreamEntity(payload, bytes.length, ContentType.parse(request.getContentType()));
         httpRequest.setEntity(entity);

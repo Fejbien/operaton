@@ -27,6 +27,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -226,6 +227,29 @@ class HttpRequestInvocationTest {
     HttpResponseImpl responseImpl = new HttpResponseImpl(httpResponse);
 
     // then — reading the response body must still work
+    assertThat(responseImpl.getResponse()).isEqualTo(expectedBody);
+  }
+
+  @Test
+  void shouldReadResponseWithCustomEncoding() throws Exception {
+    // given
+    String expectedBody = "Zażółć gęślą jaźń";
+
+    // We strictly use a non-UTF-8 encoding to prove the parameter is respected
+    String customEncoding = "ISO-8859-2";
+
+    // Encode the Polish text into ISO-8859-2 bytes
+    byte[] bodyBytes = expectedBody.getBytes(customEncoding);
+
+    TestResponse testResponse = new TestResponse();
+    testResponse.setEntity(new ByteArrayEntity(bodyBytes, ContentType.create("text/plain", customEncoding)));
+
+    // when
+    // We tell the response object to decode the bytes using ISO-8859-2
+    HttpResponseImpl responseImpl = new HttpResponseImpl(testResponse, customEncoding);
+
+    // then
+    // If responseImpl ignored our parameter and fell back to UTF-8, this assertion would fail.
     assertThat(responseImpl.getResponse()).isEqualTo(expectedBody);
   }
 }

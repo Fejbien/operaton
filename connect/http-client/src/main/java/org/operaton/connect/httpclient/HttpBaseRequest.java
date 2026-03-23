@@ -30,6 +30,7 @@ public interface HttpBaseRequest<Q extends HttpBaseRequest<?, ?>, R extends Conn
   String HEADER_CONTENT_TYPE = "Content-Type";
 
   String PARAM_NAME_REQUEST_CONFIG = "request-config";
+  String PARAM_NAME_REQUEST_ENCODING = "encoding";
 
   /**
    * Set the url of this request.
@@ -120,4 +121,17 @@ public interface HttpBaseRequest<Q extends HttpBaseRequest<?, ?>, R extends Conn
    * @return this request
    */
   Q configOption(String field, Object value);
+
+  /**
+   * Set the encoding of this request.
+   *
+   * @param encoding the encoding to set
+   * @return this request
+   */
+  Q encoding(String encoding);
+
+  /**
+   * @return the encoding of this request or null if non set
+   */
+  String getEncoding();
 }
