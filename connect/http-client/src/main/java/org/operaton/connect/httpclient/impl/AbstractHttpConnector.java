@@ -55,7 +55,6 @@ public abstract class AbstractHttpConnector<Q extends HttpBaseRequest<Q, R>, R e
   protected static final HttpConnectorLogger LOG = HttpLogger.HTTP_LOGGER;
 
   protected CloseableHttpClient httpClient;
-  protected final Charset charset;
   private Map<String, Object> connectionConfigOptions;
   private final HttpClientConnectionManager connectionManager;
 
@@ -63,7 +62,6 @@ public abstract class AbstractHttpConnector<Q extends HttpBaseRequest<Q, R>, R e
     super(connectorId);
     connectionManager = new PoolingHttpClientConnectionManager();
     httpClient = createClient();
-    charset = StandardCharsets.UTF_8;
   }
 
   protected CloseableHttpClient createClient() {
