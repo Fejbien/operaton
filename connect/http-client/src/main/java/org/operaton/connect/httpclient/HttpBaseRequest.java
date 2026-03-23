@@ -131,7 +131,7 @@ public interface HttpBaseRequest<Q extends HttpBaseRequest<?, ?>, R extends Conn
   Q encoding(String encoding);
 
   /**
-   * @return the encoding of this request or null if non set
+   * @return the encoding of this request, defaults to UTF-8 if not set, never null
    */
   String getEncoding();
 }
