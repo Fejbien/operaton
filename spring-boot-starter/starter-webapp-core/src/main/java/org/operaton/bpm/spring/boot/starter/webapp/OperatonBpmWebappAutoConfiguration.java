@@ -16,6 +16,7 @@
  */
 package org.operaton.bpm.spring.boot.starter.webapp;
 
+import org.operaton.bpm.engine.health.FrontendHealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -72,6 +73,11 @@ public class OperatonBpmWebappAutoConfiguration implements WebMvcConfigurer {
   @Bean
   FaviconResourceResolver faviconResourceResolver() {
     return new FaviconResourceResolver();
+  }
+
+  @Bean
+  public FrontendHealthContributor webappsFrontendHealthContributor() {
+    return new SpringWebappFrontendHealthContributor(resourceLoader, properties.getWebapp());
   }
 
   @Override
