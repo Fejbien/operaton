@@ -87,14 +87,12 @@ public class DefaultHealthService implements HealthService {
     queue.put("available", engineRegistered);
     details.put("queue", queue);
 
+    // guessing dont show if its included?
     Map<String, Object> frontend;
     if (frontendHealthContributor != null) {
       frontend = new LinkedHashMap<>(frontendHealthContributor.frontendDetails());
-    } else {
-      frontend = new LinkedHashMap<>();
-      frontend.put("operational", false);
+      details.put("frontend", frontend);
     }
-    details.put("frontend", frontend);
 
     boolean dbOk = (dataSource == null) || dbConnected;
     String status = dbOk ? "UP" : "DOWN";

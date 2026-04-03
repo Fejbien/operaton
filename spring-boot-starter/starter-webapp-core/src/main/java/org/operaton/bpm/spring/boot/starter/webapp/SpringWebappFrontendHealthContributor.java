@@ -40,12 +40,15 @@ class SpringWebappFrontendHealthContributor implements FrontendHealthContributor
 
   @Override
   public Map<String, Object> frontendDetails() {
-    String webjarClasspath = webappProperty != null ? webappProperty.getWebjarClasspath() : "/META-INF/resources/webjars/operaton";
-    String applicationPath = webappProperty != null ? webappProperty.getApplicationPath() : "/operaton";
+    String webjarClasspath = webappProperty != null
+            ? webappProperty.getWebjarClasspath()
+            : "/META-INF/resources/webjars/operaton";
+    String applicationPath = webappProperty != null
+            ? webappProperty.getApplicationPath()
+            : "/operaton";
 
-    String indexPath = "classpath:" + (webjarClasspath.endsWith("/") ? webjarClasspath : webjarClasspath + "/") + "app/index.html";
-    Resource index = resourceLoader.getResource(indexPath);
-    boolean operational = index.exists();
+    Resource base = resourceLoader.getResource("classpath:" + webjarClasspath);
+    boolean operational = base.exists();
 
     Map<String, Object> details = new LinkedHashMap<>();
     details.put("operational", operational);
