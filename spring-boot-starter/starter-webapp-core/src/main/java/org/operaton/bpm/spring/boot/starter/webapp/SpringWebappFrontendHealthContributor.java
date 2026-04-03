@@ -17,7 +17,6 @@ package org.operaton.bpm.spring.boot.starter.webapp;
 
 import org.operaton.bpm.engine.health.FrontendHealthContributor;
 import org.operaton.bpm.spring.boot.starter.property.WebappProperty;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import java.util.LinkedHashMap;
@@ -47,12 +46,29 @@ class SpringWebappFrontendHealthContributor implements FrontendHealthContributor
             ? webappProperty.getApplicationPath()
             : "/operaton";
 
-    Resource base = resourceLoader.getResource("classpath:" + webjarClasspath);
-    boolean operational = base.exists();
+    String basePath = webjarClasspath.endsWith("/") ? webjarClasspath : webjarClasspath + "/";
+
+    boolean cockpit = isAppPresent(basePath, "cockpit");
+    boolean tasklist = isAppPresent(basePath, "tasklist");
+    boolean admin = isAppPresent(basePath, "admin");
+
+    boolean operational = cockpit & tasklist & admin;
+
+    Map<String, Object> apps = new LinkedHashMap<>();
+    apps.put("cockpit", cockpit);
+    apps.put("tasklist", tasklist);
+    apps.put("admin", admin);
 
     Map<String, Object> details = new LinkedHashMap<>();
     details.put("operational", operational);
     details.put("path", applicationPath);
+    details.put("apps", apps);
+
     return details;
+  }
+
+  private boolean isAppPresent(String basePath, String appName) {
+    String path = "classpath:" + basePath + "app/" + appName + "/index.html";
+    return resourceLoader.getResource(path).exists();
   }
 }
