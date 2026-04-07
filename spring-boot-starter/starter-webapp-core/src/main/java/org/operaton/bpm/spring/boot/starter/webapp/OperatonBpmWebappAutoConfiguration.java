@@ -76,6 +76,7 @@ public class OperatonBpmWebappAutoConfiguration implements WebMvcConfigurer {
   }
 
   @Bean
+  @ConditionalOnProperty(name = "operaton.bpm.webapp.enabled", matchIfMissing = true)
   public FrontendHealthContributor webappsFrontendHealthContributor() {
     return new SpringWebappFrontendHealthContributor(resourceLoader, properties.getWebapp());
   }

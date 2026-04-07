@@ -28,10 +28,8 @@ import java.util.Map;
  */
 public record HealthResult(String status, String timestamp, String version, Map<String, Object> details) {
 
-  public HealthResult(String status, String timestamp, String version, Map<String, Object> details) {
-    this.status = status;
-    this.timestamp = timestamp != null ? timestamp : Instant.now().toString();
-    this.version = version;
-    this.details = details != null ? Collections.unmodifiableMap(new LinkedHashMap<>(details)) : Collections.emptyMap();
+  public HealthResult {
+    timestamp = timestamp != null ? timestamp : Instant.now().toString();
+    details = details != null ? Collections.unmodifiableMap(new LinkedHashMap<>(details)) : Collections.emptyMap();
   }
 }

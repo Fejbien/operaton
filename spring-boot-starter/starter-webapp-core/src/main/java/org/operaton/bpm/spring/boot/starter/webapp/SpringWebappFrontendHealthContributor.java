@@ -17,6 +17,7 @@ package org.operaton.bpm.spring.boot.starter.webapp;
 
 import org.operaton.bpm.engine.health.FrontendHealthContributor;
 import org.operaton.bpm.spring.boot.starter.property.WebappProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ResourceLoader;
 
 import java.util.LinkedHashMap;
@@ -27,6 +28,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:tomnm77@gmail.com">Tomasz Korcz</a>
  */
+@ConditionalOnProperty("operaton.bpm.webapp.enabled")
 class SpringWebappFrontendHealthContributor implements FrontendHealthContributor {
 
   private final ResourceLoader resourceLoader;
@@ -52,7 +54,7 @@ class SpringWebappFrontendHealthContributor implements FrontendHealthContributor
     boolean tasklist = isAppPresent(basePath, "tasklist");
     boolean admin = isAppPresent(basePath, "admin");
 
-    boolean operational = cockpit & tasklist & admin;
+    boolean operational = cockpit && tasklist && admin;
 
     Map<String, Object> apps = new LinkedHashMap<>();
     apps.put("cockpit", cockpit);

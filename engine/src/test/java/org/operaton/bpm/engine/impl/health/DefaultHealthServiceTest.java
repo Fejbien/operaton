@@ -35,16 +35,12 @@ class DefaultHealthServiceTest {
 
   @Test
   void shouldBeUpWhenNoDataSourceProvided() throws Exception {
-    JobExecutor jobExecutor = mock(JobExecutor.class);
-    when(jobExecutor.isActive()).thenReturn(true);
     @SuppressWarnings("unchecked")
     Iterator<Object> it = (Iterator<Object>) Mockito.mock(Iterator.class);
     when(it.hasNext()).thenReturn(true);
-    when(jobExecutor.engineIterator()).thenReturn((Iterator) it);
-
     FrontendHealthContributor frontend = () -> Collections.singletonMap("operational", true);
 
-    DefaultHealthService service = new DefaultHealthService(null, jobExecutor, frontend);
+    DefaultHealthService service = new DefaultHealthService(null, frontend);
     HealthResult result = service.check();
 
     assertThat(result.status()).isEqualTo("UP");
@@ -62,12 +58,7 @@ class DefaultHealthServiceTest {
     when(ds.getConnection()).thenReturn(conn);
     when(conn.isValid(anyInt())).thenReturn(true);
 
-    JobExecutor jobExecutor = mock(JobExecutor.class);
-
-    Iterator<?> iterator = Collections.emptyIterator();
-    when(jobExecutor.engineIterator()).thenReturn((Iterator<ProcessEngineImpl>) iterator);
-
-    DefaultHealthService service = new DefaultHealthService(ds, jobExecutor, null);
+    DefaultHealthService service = new DefaultHealthService(ds, null);
     HealthResult result = service.check();
 
     assertThat(result.status()).isEqualTo("UP");
@@ -80,7 +71,7 @@ class DefaultHealthServiceTest {
     DataSource ds = mock(DataSource.class);
     when(ds.getConnection()).thenThrow(new RuntimeException("boom"));
 
-    DefaultHealthService service = new DefaultHealthService(ds, null, null);
+    DefaultHealthService service = new DefaultHealthService(ds, null);
     HealthResult result = service.check();
 
     assertThat(result.status()).isEqualTo("DOWN");

@@ -36,19 +36,16 @@ public class DefaultHealthService implements HealthService {
   private static final int DATASOURCE_CONNECTION_TIMEOUT_SECONDS = 2;
 
   private final DataSource dataSource;
-  private final JobExecutor jobExecutor;
   private final String version;
   private final FrontendHealthContributor frontendHealthContributor;
 
-  public DefaultHealthService(DataSource dataSource, JobExecutor jobExecutor) {
-    this(dataSource, jobExecutor, null);
+  public DefaultHealthService(DataSource dataSource) {
+    this(dataSource, null);
   }
 
   public DefaultHealthService(DataSource dataSource,
-                              JobExecutor jobExecutor,
                               FrontendHealthContributor frontendHealthContributor) {
     this.dataSource = dataSource;
-    this.jobExecutor = jobExecutor;
     this.frontendHealthContributor = frontendHealthContributor;
     this.version = DefaultHealthService.class.getPackage() != null
             ? DefaultHealthService.class.getPackage().getImplementationVersion()
@@ -58,13 +55,7 @@ public class DefaultHealthService implements HealthService {
   @Override
   public HealthResult check() {
     String timestamp = OffsetDateTime.now().toString();
-
     Map<String, Object> details = new LinkedHashMap<>();
-
-    boolean jobExecutorActive = jobExecutor != null && jobExecutor.isActive();
-    boolean engineRegistered = jobExecutor != null && jobExecutor.engineIterator().hasNext();
-    Map<String, Object> jobExec = getStringObjectMap(jobExecutorActive, engineRegistered);
-    details.put("jobExecutor", jobExec);
 
     boolean dbConnected = false;
     String dbError = null;
@@ -72,10 +63,10 @@ public class DefaultHealthService implements HealthService {
       try (Connection c = dataSource.getConnection()) {
         dbConnected = c != null && c.isValid(DATASOURCE_CONNECTION_TIMEOUT_SECONDS);
       } catch (Exception e) {
-        dbConnected = false;
-        dbError = e.getClass().getSimpleName() + ": " + e.getMessage();
+        dbError = e.getClass().getSimpleName();
       }
     }
+
     Map<String, Object> db = new LinkedHashMap<>();
     db.put("connected", dbConnected);
     if (dbError != null) {
@@ -83,34 +74,11 @@ public class DefaultHealthService implements HealthService {
     }
     details.put("database", db);
 
-    Map<String, Object> queue = new LinkedHashMap<>();
-    queue.put("available", engineRegistered);
-    details.put("queue", queue);
-
-    // guessing dont show if its included?
-    Map<String, Object> frontend;
     if (frontendHealthContributor != null) {
-      frontend = new LinkedHashMap<>(frontendHealthContributor.frontendDetails());
-      details.put("frontend", frontend);
+      details.put("frontend", new LinkedHashMap<>(frontendHealthContributor.frontendDetails()));
     }
 
     boolean dbOk = (dataSource == null) || dbConnected;
-    String status = dbOk ? "UP" : "DOWN";
-
-    return new HealthResult(status, timestamp, version, details);
-  }
-
-  private Map<String, Object> getStringObjectMap(boolean jobExecutorActive, boolean engineRegistered) {
-    Map<String, Object> jobExec = new LinkedHashMap<>();
-    if (jobExecutor != null) {
-      jobExec.put("name", jobExecutor.getName());
-      jobExec.put("lockOwner", jobExecutor.getLockOwner());
-      jobExec.put("lockTimeInMillis", jobExecutor.getLockTimeInMillis());
-      jobExec.put("maxJobsPerAcquisition", jobExecutor.getMaxJobsPerAcquisition());
-      jobExec.put("waitTimeInMillis", jobExecutor.getWaitTimeInMillis());
-    }
-    jobExec.put("active", jobExecutorActive);
-    jobExec.put("engineRegistered", engineRegistered);
-    return jobExec;
+    return new HealthResult(dbOk ? "UP" : "DOWN", timestamp, version, details);
   }
 }
