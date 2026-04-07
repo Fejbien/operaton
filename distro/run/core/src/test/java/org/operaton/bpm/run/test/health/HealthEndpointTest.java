@@ -15,6 +15,7 @@
  */
 package org.operaton.bpm.run.test.health;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.operaton.bpm.run.test.AbstractRestTest;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +32,14 @@ public class HealthEndpointTest extends AbstractRestTest {
 
   @Test
   void shouldReturnHealthStatus() {
-    ResponseEntity<JsonNode> entity = testRestTemplate.getForEntity("/health", JsonNode.class);
+    ResponseEntity<@NonNull JsonNode> entity = testRestTemplate.getForEntity("/health", JsonNode.class);
     assertThat(entity.getStatusCode().value()).isEqualTo(200);
     JsonNode body = entity.getBody();
     assertThat(body).isNotNull();
     assertThat(body.has("status")).isTrue();
-    assertThat(body.get("status").isTextual()).isTrue();
+    assertThat(body.get("status").isString()).isTrue();
     assertThat(body.has("timestamp")).isTrue();
-    assertThat(body.get("timestamp").isTextual()).isTrue();
+    assertThat(body.get("timestamp").isString()).isTrue();
     assertThat(body.has("details")).isTrue();
   }
 }
