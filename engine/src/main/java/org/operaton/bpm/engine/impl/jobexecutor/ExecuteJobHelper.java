@@ -46,6 +46,14 @@ public final class ExecuteJobHelper {
     executeJob(commandExecutor, jobFailureCollector, cmd, null);
   }
 
+  public static ExceptionLoggingHandler getLoggingHandler() {
+    return loggingHandler;
+  }
+
+  public static void setLoggingHandler(ExceptionLoggingHandler handler) {
+    loggingHandler = handler;
+  }
+
   public static void executeJob(CommandExecutor commandExecutor, JobFailureCollector jobFailureCollector, Command<Void> cmd,
       ProcessEngineConfigurationImpl configuration) {
     try {
