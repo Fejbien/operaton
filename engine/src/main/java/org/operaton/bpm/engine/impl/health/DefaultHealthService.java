@@ -36,16 +36,19 @@ public class DefaultHealthService implements HealthService {
   private static final int DATASOURCE_CONNECTION_TIMEOUT_SECONDS = 2;
 
   private final DataSource dataSource;
+  private final JobExecutor jobExecutor;
   private final String version;
   private final FrontendHealthContributor frontendHealthContributor;
 
-  public DefaultHealthService(DataSource dataSource) {
-    this(dataSource, null);
+  public DefaultHealthService(DataSource dataSource, JobExecutor jobExecutor) {
+    this(dataSource, jobExecutor, null);
   }
 
   public DefaultHealthService(DataSource dataSource,
+                              JobExecutor jobExecutor,
                               FrontendHealthContributor frontendHealthContributor) {
     this.dataSource = dataSource;
+    this.jobExecutor = jobExecutor;
     this.frontendHealthContributor = frontendHealthContributor;
     this.version = DefaultHealthService.class.getPackage() != null
             ? DefaultHealthService.class.getPackage().getImplementationVersion()
@@ -56,6 +59,12 @@ public class DefaultHealthService implements HealthService {
   public HealthResult check() {
     String timestamp = OffsetDateTime.now().toString();
     Map<String, Object> details = new LinkedHashMap<>();
+
+    boolean jobExecutorActive = jobExecutor != null && jobExecutor.isActive();
+    boolean engineRegistered = jobExecutor != null && jobExecutor.engineIterator().hasNext();
+    Map<String, Object> je = new LinkedHashMap<>();
+    je.put("operational", jobExecutorActive && engineRegistered);
+    details.put("jobExecutor", je);
 
     boolean dbConnected = false;
     String dbError = null;

@@ -32,10 +32,12 @@ public class OperatonBpmHealthServiceConfiguration {
   @Bean
   @ConditionalOnMissingBean(HealthService.class)
   public HealthService operatonHealthService(ObjectProvider<DataSource> dataSourceProvider,
-                                             ObjectProvider<FrontendHealthContributor> frontendProvider) {
+                                             ObjectProvider<JobExecutor> jobExecutorProvider,
+                                             ObjectProvider<FrontendHealthContributor> frontendHealthContributorProvider) {
     return new DefaultHealthService(
             dataSourceProvider.getIfAvailable(),
-            frontendProvider.getIfAvailable()
+            jobExecutorProvider.getIfAvailable(),
+            frontendHealthContributorProvider.getIfAvailable()
     );
   }
 }
