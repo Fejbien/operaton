@@ -28,7 +28,6 @@ import java.util.Map;
  *
  * @author <a href="mailto:tomnm77@gmail.com">Tomasz Korcz</a>
  */
-@ConditionalOnProperty("operaton.bpm.webapp.enabled")
 class SpringWebappFrontendHealthContributor implements FrontendHealthContributor {
 
   private final ResourceLoader resourceLoader;
