@@ -71,8 +71,8 @@
 <!--      <groupId>org.springframework</groupId>-->
 <!--      <artifactId>spring-webmvc</artifactId>-->
 <!--    </dependency>-->
-    <!-- spring-boot-starter-web is requirete to make /health endpoint and actuator work when webapps module
-      is not included or is disabled-->
+    <!-- spring-boot-starter-web is require to make /health endpoint and actuator work when webapps module
+      is not included-->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
